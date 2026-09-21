@@ -19,6 +19,12 @@ test('"#/all" is the all-problems page', () => {
   assert.deepEqual(parseHash('#/all/', slugs), { name: 'all' });
 });
 
+test('"#/all/revisit" is the all-problems page pre-filtered to starred problems', () => {
+  assert.deepEqual(parseHash('#/all/revisit', slugs), { name: 'all', filter: 'revisit' });
+  assert.deepEqual(parseHash('#/all/revisit/', slugs), { name: 'all', filter: 'revisit' });
+  assert.deepEqual(parseHash('#/all/other', slugs), { name: 'home' });
+});
+
 test('unknown or odd hashes fall back to home', () => {
   assert.deepEqual(parseHash('#/nope', slugs), { name: 'home' });
   assert.deepEqual(parseHash('#graphs', slugs), { name: 'home' });

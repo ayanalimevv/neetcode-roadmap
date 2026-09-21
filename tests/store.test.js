@@ -36,6 +36,29 @@ test('after a reload the clock floor is restored from saved records', () => {
   assert.ok(reloaded.snapshot().p.dt > 5_000);
 });
 
+test('the revisit star persists, is listed, and does not touch the tick', () => {
+  const storage = memoryStorage();
+  const a = createStore({ storage });
+  a.setDone('p', true);
+  a.setRevisit('p', true);
+  a.setRevisit('q', true);
+  const b = createStore({ storage });
+  assert.equal(b.isRevisit('p'), true);
+  assert.equal(b.isDone('p'), true);
+  assert.deepEqual(b.revisitIds().sort(), ['p', 'q']);
+  b.setRevisit('p', false);
+  assert.equal(b.isRevisit('p'), false);
+  assert.equal(b.isDone('p'), true);
+  assert.deepEqual(b.revisitIds(), ['q']);
+});
+
+test('a star edit is ordered after a newer timestamp it has seen (clock skew)', () => {
+  const s = createStore({ storage: memoryStorage(), now: () => 1000 });
+  s.replaceAll({ p: { d: 0, dt: 0, n: '', nt: 0, r: 1, rt: 9_000 } });
+  s.setRevisit('p', false);
+  assert.ok(s.snapshot().p.rt > 9_000);
+});
+
 test('an empty note on an untouched problem creates no record', () => {
   const s = createStore({ storage: memoryStorage() });
   s.setNote('p', '');

@@ -1,5 +1,5 @@
-// Ticks and notes for every problem. localStorage is the offline cache; js/sync.js copies it to a Gist.
-// Records are { d, dt, n, nt } (see js/merge.js).
+// Ticks, notes and revisit stars for every problem. localStorage is the offline cache; js/sync.js copies it to a Gist.
+// Records are { d, dt, n, nt, r, rt } (see js/merge.js).
 
 import { sanitize } from './merge.js';
 
@@ -26,7 +26,8 @@ export function browserStorage() {
   }
 }
 
-const newest = (items) => Object.values(items).reduce((m, r) => Math.max(m, r.dt, r.nt), 0);
+const newest = (items) => Object.values(items).reduce((m, r) => Math.max(m, r.dt, r.nt, r.rt), 0);
+const blank = () => ({ d: 0, dt: 0, n: '', nt: 0, r: 0, rt: 0 });
 
 export function createStore({ storage = browserStorage(), now = Date.now } = {}) {
   const listeners = new Set();
@@ -63,20 +64,30 @@ export function createStore({ storage = browserStorage(), now = Date.now } = {})
 
   return {
     isDone: (id) => items[id]?.d === 1,
+    isRevisit: (id) => items[id]?.r === 1,
     note: (id) => items[id]?.n ?? '',
     doneCount: (ids) => ids.filter((id) => items[id]?.d === 1).length,
+    revisitIds: () => Object.keys(items).filter((id) => items[id].r === 1),
 
     setDone(id, done) {
-      const r = (items[id] ??= { d: 0, dt: 0, n: '', nt: 0 });
+      const r = (items[id] ??= blank());
       r.d = done ? 1 : 0;
       r.dt = stamp();
       persist();
       emit('local');
     },
 
+    setRevisit(id, on) {
+      const r = (items[id] ??= blank());
+      r.r = on ? 1 : 0;
+      r.rt = stamp();
+      persist();
+      emit('local');
+    },
+
     setNote(id, text) {
       if (!items[id] && !text) return;
-      const r = (items[id] ??= { d: 0, dt: 0, n: '', nt: 0 });
+      const r = (items[id] ??= blank());
       r.n = String(text).slice(0, 500);
       r.nt = stamp();
       persist();

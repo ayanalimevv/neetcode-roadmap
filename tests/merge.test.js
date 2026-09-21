@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mergeItems, sameItems, sanitize } from '../js/merge.js';
 
-const rec = (d, dt, n = '', nt = 0) => ({ d, dt, n, nt });
+const rec = (d, dt, n = '', nt = 0, r = 0, rt = 0) => ({ d, dt, n, nt, r, rt });
 
 test('two devices editing different problems keep both edits', () => {
   const a = { 'arr-two-sum': rec(1, 100) };
@@ -29,6 +29,26 @@ test('tick and note are merged separately for the same problem', () => {
   const deviceB = { p: rec(0, 0, 'use a Map', 400) };        // note written on B
   const merged = mergeItems(deviceA, deviceB);
   assert.deepEqual(merged.p, rec(1, 300, 'use a Map', 400));
+});
+
+test('the revisit star merges on its own, without disturbing the tick or the note', () => {
+  const deviceA = { p: rec(1, 300, 'a note', 310) };                  // ticked and noted on A
+  const deviceB = { p: rec(0, 0, '', 0, 1, 400) };                     // starred on B
+  assert.deepEqual(mergeItems(deviceA, deviceB).p, rec(1, 300, 'a note', 310, 1, 400));
+  assert.deepEqual(mergeItems(deviceB, deviceA).p, rec(1, 300, 'a note', 310, 1, 400));
+});
+
+test('un-starring with a newer time beats an older star', () => {
+  const starred = { p: rec(0, 0, '', 0, 1, 100) };
+  const cleared = { p: rec(0, 0, '', 0, 0, 200) };
+  assert.equal(mergeItems(starred, cleared).p.r, 0);
+  assert.equal(mergeItems(cleared, starred).p.r, 0);
+});
+
+test('records saved before the star existed read as not starred', () => {
+  const old = { p: { d: 1, dt: 50, n: 'x', nt: 60 } };                 // no r / rt
+  assert.deepEqual(sanitize(old).p, rec(1, 50, 'x', 60, 0, 0));
+  assert.deepEqual(mergeItems(old, {}).p, rec(1, 50, 'x', 60, 0, 0));
 });
 
 test('merge is symmetric, including on exact timestamp ties', () => {
@@ -59,4 +79,5 @@ test('sameItems compares every field', () => {
   assert.ok(sameItems({ p: rec(1, 1, 'a', 1) }, { p: rec(1, 1, 'a', 1) }));
   assert.ok(!sameItems({ p: rec(1, 1, 'a', 1) }, { p: rec(1, 1, 'b', 1) }));
   assert.ok(!sameItems({ p: rec(1, 1) }, {}));
+  assert.ok(!sameItems({ p: rec(0, 0, '', 0, 1, 5) }, { p: rec(0, 0, '', 0, 0, 5) }));
 });
