@@ -5,7 +5,7 @@ import { SHORTCUTS, createKeyHandler, isTypingTarget, isMac } from '../js/keys.j
 const body = { tagName: 'BODY', closest: () => null };
 const el = (tagName, type) => { const t = { tagName, type }; t.closest = () => t; return t; };
 const ACTIONS = ['palette', 'help', 'sidebar', 'home', 'all', 'revisit', 'nextUnsolved', 'prevTopic', 'nextTopic',
-  'next', 'prev', 'toggleDone', 'toggleRevisit', 'editNote', 'openLeetCode', 'clear'];
+  'next', 'prev', 'toggleDone', 'toggleRevisit', 'editNote', 'openLeetCode', 'clear', 'ask'];
 
 function setup({ current = true, blocked = false } = {}) {
   const calls = [];

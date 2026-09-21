@@ -39,6 +39,11 @@
           <span class="search-label">Search</span><kbd>Ctrl K</kbd>
         </button>
 
+        <button id="ask-btn" class="search-btn" type="button" aria-expanded="false" aria-controls="ai-panel" aria-label="Ask the study assistant" title="Ask the study assistant (a)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6z"/><path d="M15.5 13.5l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/></svg>
+          <span class="search-label">Ask</span>
+        </button>
+
         <div class="overall" aria-live="polite">
           <span id="overall-text" class="overall-text">0 / 150</span>
           <div class="track"><i id="overall-bar"></i></div>
@@ -64,7 +69,67 @@
         <a href="https://github.com/ayanalimevv/neetcode-roadmap" rel="noopener">Source on GitHub</a>
       </footer>
     </div>
-  </div>
+
+    <!-- study assistant (js/ai/panel.js): hints, debugging, review and chat, using the user's own free API key -->
+    <aside id="ai-panel" class="ai-panel" aria-label="Study assistant" hidden>
+      <header class="ai-head">
+        <h2>Ask</h2>
+        <span id="ai-engine-chip" class="ai-engine-chip"></span>
+        <div class="ai-head-actions">
+          <button id="ai-settings-btn" class="icon-btn" type="button" aria-label="Assistant settings" title="Settings">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="2.4"/><path d="M10 2.8v1.7M10 15.5v1.7M2.8 10h1.7M15.5 10h1.7M4.9 4.9l1.2 1.2M13.9 13.9l1.2 1.2M4.9 15.1l1.2-1.2M13.9 6.1l1.2-1.2"/></svg>
+          </button>
+          <button id="ai-clear" class="icon-btn" type="button" aria-label="Clear this conversation" title="Clear this conversation">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2M6 6l.7 10h6.6L14 6"/></svg>
+          </button>
+          <button id="ai-close" class="icon-btn" type="button" aria-label="Close the assistant" title="Close (Esc)">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="ai-context">
+        <label for="ai-problem" class="ai-label">About</label>
+        <select id="ai-problem" aria-label="Which problem is this about?"></select>
+      </div>
+
+      <div class="seg ai-modes" role="group" aria-label="What do you need?">
+        <button type="button" data-mode="hint" aria-pressed="true">Hint</button>
+        <button type="button" data-mode="debug" aria-pressed="false">Debug</button>
+        <button type="button" data-mode="review" aria-pressed="false">Review</button>
+        <button type="button" data-mode="explain" aria-pressed="false">Explain</button>
+        <button type="button" data-mode="chat" aria-pressed="false">Chat</button>
+      </div>
+
+      <div id="ai-setup" class="ai-setup" hidden>
+        <p><strong>Add a free API key to start.</strong> It takes about a minute, and the key stays in this browser only.</p>
+        <button id="ai-setup-btn" type="button" class="btn btn-primary">Set up</button>
+      </div>
+
+      <div id="ai-log" class="ai-log" role="log" aria-label="Conversation"></div>
+
+      <form id="ai-form" class="ai-form" autocomplete="off">
+        <div id="ai-hint-row" class="ai-row">
+          <div id="ai-levels" class="seg" role="group" aria-label="Hint level"></div>
+        </div>
+        <div id="ai-code-row" class="ai-row" hidden>
+          <textarea id="ai-code" rows="8" spellcheck="false" autocapitalize="off" placeholder="Paste your JavaScript here" aria-label="Your code"></textarea>
+          <div class="ai-two">
+            <input id="ai-expected" type="text" placeholder="What you expected" aria-label="What you expected">
+            <input id="ai-actual" type="text" placeholder="What happened (error or wrong output)" aria-label="What happened">
+          </div>
+        </div>
+        <div id="ai-explain-row" class="ai-row">
+          <button id="ai-summarize" type="button" class="btn" hidden>Summarise this topic</button>
+        </div>
+        <textarea id="ai-question" rows="2" aria-label="Your question"></textarea>
+        <div class="ai-actions">
+          <span id="ai-note" class="ai-note" role="status" aria-live="polite"></span>
+          <button id="ai-stop" type="button" class="btn" hidden>Stop</button>
+          <button id="ai-send" type="submit" class="btn btn-primary">Get hint</button>
+        </div>
+      </form>
+    </aside>
 
   <!-- command palette (js/palette.js): the page behind is dimmed and blurred by CSS -->
   <dialog id="palette" class="palette" aria-label="Command palette">
@@ -81,6 +146,46 @@
       <div class="help-head"><h2 id="help-title">Keyboard shortcuts</h2><button id="help-close" type="button" class="btn btn-quiet">Close</button></div>
       <div id="help-body" class="help-body"></div>
     </div>
+  </dialog>
+
+  <!-- assistant settings (js/ai/panel.js): engine, key, model. The key is kept in this browser only. -->
+  <dialog id="ai-settings" class="sync-dialog" aria-labelledby="ai-settings-title">
+    <form id="ai-settings-form" class="sync-form" autocomplete="off">
+      <h2 id="ai-settings-title">Assistant settings</h2>
+      <p>The assistant uses <strong>your own free API key</strong>. It is saved in this browser only: never in the repository, and never in your synced notes.</p>
+
+      <div id="ai-engines" class="ai-engines" role="radiogroup" aria-label="Engine"></div>
+      <p id="ai-engine-blurb" class="ai-blurb"></p>
+
+      <label class="sync-field" for="ai-key">API key · <a id="ai-key-link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">get a free key</a></label>
+      <input id="ai-key" type="password" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="AIza…">
+
+      <label class="sync-field" for="ai-model">Model</label>
+      <div class="ai-model-row">
+        <input id="ai-model" type="text" list="ai-models" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Chosen automatically">
+        <datalist id="ai-models"></datalist>
+        <button id="ai-load-models" type="button" class="btn">Load models</button>
+      </div>
+
+      <p id="ai-status" class="sync-status" role="status" aria-live="polite"></p>
+
+      <div class="sync-actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button id="ai-test" type="button" class="btn">Test connection</button>
+        <button id="ai-forget" type="button" class="btn" hidden>Forget key</button>
+        <button id="ai-settings-close" type="button" class="btn btn-quiet">Close</button>
+      </div>
+
+      <details class="sync-caveats">
+        <summary>Privacy</summary>
+        <ul>
+          <li id="ai-privacy"></li>
+          <li>Your question and any code you paste are sent to the engine you choose. Don’t paste secrets or anything private.</li>
+          <li>Chat history stays in this browser, per topic. Use the bin icon in the panel to clear it.</li>
+          <li>Free tiers change without notice. If one stops working, switch engine here.</li>
+        </ul>
+      </details>
+    </form>
   </dialog>
 
   <!-- behaviour wired in js/sync-ui.js -->

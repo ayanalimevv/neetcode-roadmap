@@ -12,6 +12,7 @@ import { createCurrent } from './current.js';
 import { initPalette } from './palette.js';
 import { initHelp, shortcutText } from './help.js';
 import { initOutline } from './outline.js';
+import { initAi } from './ai/panel.js';
 import {
   renderNav, markNav, renderCrumb, renderHome, renderAll, renderTopic,
   paintRows, paintProgress, bindInteractions, nextUnsolved,
@@ -58,7 +59,8 @@ function goToProblem(id) {
   location.hash = `#/${TOPIC_BY_ID.get(p.topic).slug}`;
 }
 
-bindInteractions(app, store, { goToProblem });
+let ai = null; // created below, once the pieces it needs exist
+bindInteractions(app, store, { goToProblem, onAsk: (id) => ai?.open({ problemId: id }) });
 
 /* ---------- sidebar: folds away on desktop (remembered), slides over the page on a phone ---------- */
 
@@ -134,6 +136,13 @@ const actions = {
   hasCurrent: () => current.has(),
 };
 
+ai = initAi({
+  topics: TOPICS, problemById: PROBLEM_BY_ID, topicById: TOPIC_BY_ID, storage,
+  getRoute: () => route, getCurrentProblemId: () => current.id(), goToProblem,
+});
+actions.ask = () => ai.toggle();
+$('ask-btn').addEventListener('click', () => ai.toggle());
+
 const palette = initPalette({
   topics: TOPICS,
   store,
@@ -145,6 +154,8 @@ const palette = initPalette({
     { title: 'Go to All problems', hint: shortcutText('all'), keywords: 'list browse filter', run: actions.all },
     { title: 'Show revisit list', hint: shortcutText('revisit'), keywords: 'starred star', run: actions.revisit },
     { title: 'Toggle sidebar', hint: shortcutText('sidebar'), keywords: 'menu hide show', run: actions.sidebar },
+    { title: 'Ask the assistant', hint: shortcutText('ask'), keywords: 'ai hint debug review help chat gemini', run: () => ai.toggle() },
+    { title: 'Assistant settings', hint: 'api key', keywords: 'ai gemini groq openrouter key model', run: () => ai.openSettings() },
     { title: 'Sync settings', hint: 'devices', keywords: 'gist token sync', run: () => $('sync-chip').click() },
     { title: 'Keyboard shortcuts', hint: shortcutText('help'), keywords: 'keys help', run: actions.help },
   ],
@@ -194,6 +205,7 @@ let firstRoute = true;
 startRouter(TOPICS.map((t) => t.slug), (r) => {
   route = r;
   draw(r);
+  ai.onRoute(r);
   if (!desktop.matches) setOpen(false);
   else nav.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest' });
   if (!firstRoute) {

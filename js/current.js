@@ -28,6 +28,7 @@ export function createCurrent(app) {
 
   return {
     has: () => !!row(),
+    id: () => row()?.dataset.id ?? null,
     clear,
     set,
 

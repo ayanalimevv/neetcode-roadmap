@@ -102,6 +102,12 @@ test('the site context is only included on the first message of a conversation',
   assert.equal(buildPrompt({ ...base, mode: 'chat', question: 'q', hasHistory: true }).content, 'q');
 });
 
+test('the context is sent again when the problem changed mid-conversation (withContext)', () => {
+  const again = buildPrompt({ ...base, mode: 'chat', question: 'q', hasHistory: true, withContext: true }).content;
+  assert.match(again, /Clone Graph/);
+  assert.equal(buildPrompt({ ...base, mode: 'chat', question: 'q', hasHistory: false, withContext: false }).content, 'q');
+});
+
 test('a message over the engine limit is refused with a helpful message, not sent', () => {
   const big = 'x'.repeat(12000);
   const r = buildPrompt({ ...base, mode: 'debug', code: big, cap: 10000 });

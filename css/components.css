@@ -327,3 +327,91 @@ kbd {
 .help-body dl div { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 0.875rem; }
 .help-body dt { display: flex; flex-wrap: wrap; gap: 4px; }
 .help-body dd { margin: 0; color: var(--muted); }
+
+/* ---------- study assistant panel ---------- */
+.ai-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+}
+.ai-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px 8px 16px; }
+.ai-head h2 { font-size: 1rem; letter-spacing: 0; }
+.ai-engine-chip { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 0.75rem; }
+.ai-head-actions { display: flex; gap: 2px; }
+.ai-context { display: flex; align-items: center; gap: 8px; padding: 0 16px 8px; }
+.ai-label { color: var(--muted); font-size: 0.8125rem; }
+.ai-context select { flex: 1; min-width: 0; padding: 4px 8px; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--radius); font-size: 0.8125rem; }
+.ai-modes { margin: 0 16px 8px; display: flex; }
+.ai-modes button { flex: 1; padding-inline: 4px; }
+.seg button:disabled { opacity: 0.5; cursor: default; }
+
+.ai-setup { margin: 0 16px 8px; padding: 12px 14px; background: var(--bg-soft); border-radius: var(--radius); font-size: 0.875rem; }
+.ai-setup p { margin-bottom: 10px; color: var(--muted); }
+
+.ai-log { flex: 1; min-height: 0; overflow-y: auto; display: grid; align-content: start; gap: 14px; padding: 8px 16px 14px; border-top: 1px solid var(--line); }
+.ai-empty { padding: 18px 2px; color: var(--muted); font-size: 0.9375rem; }
+.ai-who { margin-bottom: 4px; color: var(--muted); font-size: 0.75rem; }
+.ai-msg.user .ai-body { padding: 8px 12px; background: var(--bg-soft); border-radius: 8px; white-space: pre-wrap; font-size: 0.9375rem; }
+.ai-msg.assistant .ai-body { font-size: 0.9375rem; line-height: 1.55; overflow-wrap: anywhere; }
+.ai-body p { margin: 0 0 0.65em; }
+.ai-body p:last-child { margin-bottom: 0; }
+.ai-body h4 { margin: 0.9em 0 0.3em; font-size: 0.9375rem; font-weight: 600; }
+.ai-body ul, .ai-body ol { margin: 0 0 0.65em; padding-left: 1.3em; }
+.ai-body li + li { margin-top: 0.25em; }
+.ai-body .code { margin: 0.5em 0 0.75em; }
+.ai-body .code pre { font-size: 0.78rem; }
+.ai-code { margin-top: 6px; font-size: 0.8125rem; color: var(--muted); }
+.ai-code summary { cursor: pointer; }
+.ai-code pre { margin: 6px 0 0; padding: 10px 12px; max-height: 220px; overflow: auto; background: var(--bg-soft); border-radius: var(--radius); font: 0.78rem / 1.55 var(--font-mono); }
+.ai-code pre code { padding: 0; background: none; color: var(--ink); }
+.ai-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ai-err { padding: 10px 12px; background: var(--tag-red-bg); color: var(--tag-red-fg); border-radius: var(--radius); font-size: 0.875rem; }
+.ai-err p { margin-bottom: 8px; }
+.ai-err p:last-child { margin-bottom: 0; }
+.ai-problem { padding: 0 6px; background: var(--tag-blue-bg); border: 0; border-radius: 3px; color: var(--tag-blue-fg); font: inherit; font-size: 0.875rem; line-height: 20px; }
+.ai-problem:hover { text-decoration: underline; }
+.ai-cursor { display: inline-block; width: 7px; height: 1em; margin-left: 2px; vertical-align: text-bottom; background: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .ai-cursor { animation: ai-blink 1s steps(2, start) infinite; } }
+@keyframes ai-blink { to { visibility: hidden; } }
+
+.ai-form { display: grid; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--line); background: var(--bg); }
+.ai-row { display: grid; gap: 8px; }
+.ai-row[hidden] { display: none; }
+.ai-form textarea, .ai-form input[type="text"] { width: 100%; padding: 7px 10px; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--radius); font: inherit; font-size: 0.875rem; resize: vertical; }
+.ai-form textarea:focus, .ai-form input:focus, .ai-context select:focus, .ai-model-row input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+#ai-code { font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.5; tab-size: 2; white-space: pre; overflow: auto; }
+.ai-two { display: grid; gap: 8px; }
+.ai-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.ai-note { flex: 1; min-width: 0; color: var(--muted); font-size: 0.75rem; }
+.ai-note[data-tone="bad"] { color: var(--bad); }
+.btn-danger { background: var(--tag-red-bg); border-color: transparent; color: var(--tag-red-fg); }
+.btn-danger:hover { background: var(--tag-red-bg); filter: brightness(0.96); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+
+/* Settings dialog extras (the dialog itself reuses .sync-dialog and .sync-form). */
+.ai-engines { display: grid; gap: 8px; }
+.ai-engine { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius); cursor: pointer; }
+.ai-engine:hover { background: var(--bg-hover); }
+.ai-engine:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.ai-engine input { accent-color: var(--accent); }
+.ai-engine-name { font-weight: 500; }
+.ai-blurb { margin: 0; color: var(--muted); font-size: 0.875rem; }
+#ai-key, .ai-model-row input { width: 100%; padding: 7px 10px; background: var(--bg-soft); border: 1px solid var(--line-strong); border-radius: var(--radius); font: 0.875rem var(--font-mono); }
+#ai-key:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ai-model-row { display: flex; gap: 8px; }
+.ai-model-row input { flex: 1; min-width: 0; }
+.sync-field a { color: var(--accent); font-weight: 400; }
+
+/* Layout. These come after the base rules on purpose (same specificity: the later one wins). */
+@media (min-width: 1100px) {
+  body.ai-open .shell { grid-template-columns: var(--sidebar-w) minmax(0, 1fr) 400px; }
+  body.ai-open.sidebar-collapsed .shell { grid-template-columns: minmax(0, 1fr) 400px; }
+  .ai-panel { position: sticky; top: 0; height: 100vh; height: 100dvh; }
+}
+@media (max-width: 1099px) {
+  .ai-panel { position: fixed; inset: 0 0 0 auto; z-index: 60; width: min(100vw, 440px); height: 100dvh; box-shadow: var(--shadow-pop); }
+}
+@media (max-width: 560px) { .ai-two { grid-template-columns: 1fr; } }
+@media (min-width: 561px) { .ai-two { grid-template-columns: 1fr 1fr; } }

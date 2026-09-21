@@ -212,3 +212,8 @@
 
 /* On a narrow screen the LeetCode link and star wrap onto their own line; keep them visible so the row has no blank gap. */
 @media (max-width: 620px) { .pactions { opacity: 1; } }
+
+/* The "ask the assistant" button on each problem row shares the row's other quick actions. */
+.ask { display: grid; place-items: center; width: 22px; height: 22px; padding: 0; background: none; border: 0; border-radius: 4px; color: var(--faint); }
+.ask:hover { background: var(--accent-soft); color: var(--accent); }
+.ask svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }

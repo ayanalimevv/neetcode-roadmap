@@ -5,6 +5,7 @@
 export const SHORTCUTS = [
   { group: 'General', keys: ['mod', 'K'], label: 'Command palette', action: 'palette', press: [{ key: 'k', ctrlKey: true }] },
   { group: 'General', keys: ['/'], label: 'Search everything', action: 'palette', press: [{ key: '/' }] },
+  { group: 'General', keys: ['a'], label: 'Ask the assistant (about the current problem)', action: 'ask', press: [{ key: 'a' }] },
   { group: 'General', keys: ['?'], label: 'Show these shortcuts', action: 'help', press: [{ key: '?', shiftKey: true }] },
   { group: 'General', keys: ['mod', '\\'], label: 'Toggle the sidebar', action: 'sidebar', press: [{ key: '\\', ctrlKey: true }] },
   { group: 'Go to', keys: ['g', 'h'], label: 'Overview', action: 'home', press: [{ key: 'g' }, { key: 'h' }] },
@@ -73,6 +74,7 @@ export function createKeyHandler(actions, { now = Date.now, isBlocked = () => fa
       case 'g': prefixAt = now(); return true;
       case '/': return run('palette');
       case '?': return run('help');
+      case 'a': return run('ask');
       case '[': return run('prevTopic');
       case ']': return run('nextTopic');
       case 'j': return run('next');

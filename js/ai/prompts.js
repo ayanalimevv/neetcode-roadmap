@@ -132,7 +132,9 @@ export function buildPrompt(input) {
     body = q;
   }
 
-  const content = [ctx && !hasHistory ? `${ctx}\n` : '', body].join('\n').trim();
+  // The site context goes in on the first message, or whenever the topic or problem has changed since.
+  const includeContext = input.withContext === undefined ? !hasHistory : input.withContext;
+  const content = [ctx && includeContext ? `${ctx}\n` : '', body].join('\n').trim();
   if (!fits(content, cap)) {
     return { error: `That is ${content.length.toLocaleString('en-US')} characters, over this engine's limit of ${cap.toLocaleString('en-US')}. Trim the code to the function you want help with, or switch engine in the settings.` };
   }

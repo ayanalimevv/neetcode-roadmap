@@ -123,6 +123,7 @@ export function renderHome({ overview, topics, groups, lastSlug, total, revisit 
 
 /* ---------- problems ---------- */
 
+const SPARK = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6z"/></svg>';
 const STAR = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L2.8 7.9l5-.7z"/></svg>';
 
 function lcLink(p) {
@@ -142,7 +143,7 @@ function problemRow(p, num, q = '') {
     <div>
       <div class="pline">
         <span class="pnum">${String(num).padStart(2, '0')}</span><label class="pname" for="c-${p.id}">${esc(p.name)}</label>
-        <span class="pactions">${lcLink(p)}<button type="button" class="star" aria-pressed="false" aria-label="Star ${escAttr(p.name)} to revisit" title="Revisit · press s">${STAR}</button></span>
+        <span class="pactions">${lcLink(p)}<button type="button" class="ask" aria-label="Ask the assistant about ${escAttr(p.name)}" title="Ask the assistant · press a">${SPARK}</button><button type="button" class="star" aria-pressed="false" aria-label="Star ${escAttr(p.name)} to revisit" title="Revisit · press s">${STAR}</button></span>
       </div>
       <p class="hint">${inlineCode(p.hint)}</p>
       <input class="note" id="n-${p.id}" type="text" maxlength="500" placeholder="One-line takeaway: what was the trick?" aria-label="Note for ${escAttr(p.name)}" hidden>
@@ -358,7 +359,7 @@ async function copyText(text) {
   }
 }
 
-export function bindInteractions(app, store, { goToProblem = () => {} } = {}) {
+export function bindInteractions(app, store, { goToProblem = () => {}, onAsk = () => {} } = {}) {
   app.addEventListener('change', (e) => {
     const box = e.target.closest('.prob input[type="checkbox"]');
     if (!box) return;
@@ -373,6 +374,11 @@ export function bindInteractions(app, store, { goToProblem = () => {} } = {}) {
   });
 
   app.addEventListener('click', async (e) => {
+    const askBtn = e.target.closest('.ask');
+    if (askBtn) {
+      onAsk(askBtn.closest('.prob').dataset.id);
+      return;
+    }
     const star = e.target.closest('.star');
     if (star) {
       const row = star.closest('.prob');

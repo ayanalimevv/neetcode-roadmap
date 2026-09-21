@@ -178,3 +178,18 @@ test('a topic page also shows a per-difficulty line and the group tag', () => {
   assert.ok(html.includes(`data-diffline="${TOPICS[0].id}"`));
   assert.ok(html.includes('tag tag-group') && html.includes('Foundations'));
 });
+
+/* ---------- study assistant hooks ---------- */
+
+test('every problem row has an "Ask the assistant" button, labelled with the problem name', () => {
+  const html = renderAll({ topics: TOPICS, total: TOTAL });
+  assert.equal(count(html, /class="ask"/g), 150);
+  assert.ok(html.includes('aria-label="Ask the assistant about Two Sum"'));
+});
+
+test('a problem name cannot break out of the Ask button label', () => {
+  const t = structuredClone(TOPICS[0]);
+  t.groups[0].items[0].name = 'x" onclick="alert(1)';
+  t.problems = t.groups.flatMap((g) => g.items);
+  assert.ok(!renderTopic(t).includes('onclick="alert(1)'));
+});
