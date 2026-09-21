@@ -1,0 +1,81 @@
+/* Design tokens only: colours, fonts, spacing. No layout rules here. */
+
+:root {
+  color-scheme: light;
+
+  /* neutrals, tinted slightly toward the blue accent */
+  --bg: #edf0f4;
+  --surface: #ffffff;
+  --surface-2: #f5f7fa;
+  --ink: #121722;
+  --muted: #566072;
+  --line: #d5dbe4;
+  --line-strong: #b4becc;
+
+  /* code */
+  --code-bg: #f3f5f8;
+  --code-ink: #1b2333;
+  --syn-kw: #a2305b;
+  --syn-str: #2c7a3e;
+  --syn-com: #727d91;
+  --syn-num: #a85300;
+
+  /* one hue per topic group; a topic page sets --t to its group's hue */
+  --g-found: #2f6db5;
+  --g-struct: #0b7285;
+  --g-search: #b94a12;
+  --g-dp: #4650c8;
+  --g-misc: #2f7d3a;
+
+  /* difficulty and state */
+  --easy: #2e9b57;
+  --med: #d08a12;
+  --hard: #d0453c;
+  --ok: #2e9b57;
+  --warn: #d08a12;
+  --bad: #d0453c;
+
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --radius: 10px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --header-h: 56px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0d1118;
+    --surface: #151b26;
+    --surface-2: #1b2230;
+    --ink: #e7ebf2;
+    --muted: #98a3b5;
+    --line: #283142;
+    --line-strong: #3a465a;
+    --code-bg: #0a0e15;
+    --code-ink: #d6ddea;
+    --syn-kw: #f08fb4;
+    --syn-str: #8fd19a;
+    --syn-com: #7c889d;
+    --syn-num: #f1b266;
+    --g-found: #7fb0ee;
+    --g-struct: #4fc3d6;
+    --g-search: #f08a55;
+    --g-dp: #9aa3ff;
+    --g-misc: #6fcb7d;
+    --easy: #4cc27b;
+    --med: #e3a73a;
+    --hard: #ee6b62;
+    --ok: #4cc27b;
+    --warn: #e3a73a;
+    --bad: #ee6b62;
+  }
+}
+
+.g-found { --t: var(--g-found); }
+.g-struct { --t: var(--g-struct); }
+.g-search { --t: var(--g-search); }
+.g-dp { --t: var(--g-dp); }
+.g-misc { --t: var(--g-misc); }
