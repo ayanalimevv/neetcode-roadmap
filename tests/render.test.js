@@ -191,5 +191,8 @@ test('a problem name cannot break out of the Ask button label', () => {
   const t = structuredClone(TOPICS[0]);
   t.groups[0].items[0].name = 'x" onclick="alert(1)';
   t.problems = t.groups.flatMap((g) => g.items);
-  assert.ok(!renderTopic(t).includes('onclick="alert(1)'));
+  const html = renderTopic(t);
+  // Inside an attribute the quotes must be escaped. (In the visible label text they are harmless.)
+  assert.ok(html.includes('aria-label="Ask the assistant about x&quot; onclick=&quot;alert(1)"'));
+  assert.ok(!/aria-label="[^"]*"\s+onclick=/.test(html), 'a quote must not end the attribute early');
 });
