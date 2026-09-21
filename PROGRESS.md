@@ -11,7 +11,7 @@ Resume here in a fresh session. Original plan: `C:\Users\Tharu\.claude\plans\giv
 - Local preview: `python -m http.server 8765` (ES modules need http).
 
 ## State
-All steps of the original plan are built and pushed. 18 topics, 150 problems, 143 tests.
+All steps of the original plan are built and pushed, plus the redesign and round 3. 18 topics, 150 problems, 193 tests.
 
 - [x] Housekeeping, shell, CSS (tokens, base, components, pages)
 - [x] JS: store, merge, sync, sync-ui, render, router, main, highlight
