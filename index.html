@@ -34,6 +34,11 @@
         </button>
         <nav id="crumb" class="crumb" aria-label="Breadcrumb"></nav>
 
+        <button id="search-btn" class="search-btn" type="button" aria-haspopup="dialog" aria-label="Search and commands">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2L17 17"/></svg>
+          <span class="search-label">Search</span><kbd>Ctrl K</kbd>
+        </button>
+
         <div class="overall" aria-live="polite">
           <span id="overall-text" class="overall-text">0 / 150</span>
           <div class="track"><i id="overall-bar"></i></div>
@@ -43,6 +48,9 @@
           <span class="chip-dot" aria-hidden="true"></span>
           <span id="sync-label">Local only</span>
         </button>
+
+        <!-- a thin overall-progress line along the bottom edge of the bar; shown on phones, where the mini bar is hidden -->
+        <div id="topline" class="topline" role="progressbar" aria-label="Problems solved" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0"><i></i></div>
       </header>
 
       <!-- filled by js/main.js: the home page, all problems, or one topic -->
@@ -57,6 +65,23 @@
       </footer>
     </div>
   </div>
+
+  <!-- command palette (js/palette.js): the page behind is dimmed and blurred by CSS -->
+  <dialog id="palette" class="palette" aria-label="Command palette">
+    <div class="pal-box">
+      <input id="pal-input" type="text" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" placeholder="Search topics, problems and actions…" spellcheck="false" autocomplete="off" autocapitalize="off">
+      <ul id="pal-list" class="pal-list" role="listbox" aria-label="Results"></ul>
+      <div class="pal-foot" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd class="pal-mod">Ctrl</kbd><kbd>↵</kbd> LeetCode</span><span><kbd>esc</kbd> close</span></div>
+    </div>
+  </dialog>
+
+  <!-- keyboard shortcut cheat sheet (js/help.js) -->
+  <dialog id="help" class="help" aria-labelledby="help-title">
+    <div class="help-box">
+      <div class="help-head"><h2 id="help-title">Keyboard shortcuts</h2><button id="help-close" type="button" class="btn btn-quiet">Close</button></div>
+      <div id="help-body" class="help-body"></div>
+    </div>
+  </dialog>
 
   <!-- behaviour wired in js/sync-ui.js -->
   <dialog id="sync-dialog" class="sync-dialog" aria-labelledby="sync-title">

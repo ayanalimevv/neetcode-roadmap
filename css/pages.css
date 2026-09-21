@@ -145,3 +145,67 @@
 .pager a:hover { background: var(--bg-hover); }
 .pager small { font-size: 0.75rem; color: var(--muted); }
 .pager .next { margin-left: auto; text-align: right; }
+
+/* ---------- home: progress card and revisit list ---------- */
+.progress-card { margin-top: 28px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 8px; }
+.pc-head { display: flex; align-items: baseline; justify-content: space-between; }
+.pc-head h2 { font-size: 1rem; font-weight: 600; letter-spacing: 0; }
+.pc-pct { color: var(--muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.pc-nums { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+.pc-big { font-size: 2.5rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.pc-of { color: var(--muted); }
+.stack { display: flex; height: 10px; margin-top: 14px; background: var(--line-strong); border-radius: 5px; overflow: hidden; }
+.pseg { display: block; height: 100%; width: 0; transition: width 0.3s ease; }
+.pseg-e { background: var(--c-easy); }
+.pseg-m { background: var(--c-med); }
+.pseg-h { background: var(--c-hard); }
+.pc-legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 12px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.875rem; }
+.pc-legend b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; }
+.dot-e { background: var(--c-easy); }
+.dot-m { background: var(--c-med); }
+.dot-h { background: var(--c-hard); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+.revisit-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.link-row { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 8px 6px; background: none; border: 0; border-bottom: 1px solid var(--line); text-align: left; }
+.link-row:hover { background: var(--bg-hover); }
+
+/* ---------- problem rows: LeetCode link, revisit star, current row ---------- */
+.pline { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4px; }
+.pactions { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; opacity: 0; transition: opacity 0.12s; }
+.prob:hover .pactions, .prob:focus-within .pactions, .prob.is-current .pactions, .prob.revisit .pactions { opacity: 1; }
+@media (hover: none) { .pactions { opacity: 1; } }
+.lc { padding: 1px 6px; border-radius: 4px; color: var(--muted); font-size: 0.75rem; text-decoration: none; white-space: nowrap; }
+.lc:hover { background: var(--accent-soft); color: var(--accent); }
+.star { display: grid; place-items: center; width: 22px; height: 22px; padding: 0; background: none; border: 0; border-radius: 4px; color: var(--faint); }
+.star:hover { background: var(--bg-hover); color: var(--ink); }
+.star svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+.star[aria-pressed="true"] { color: #dfab01; }
+.star[aria-pressed="true"] svg { fill: currentColor; }
+.tag-premium { background: var(--tag-brown-bg); color: var(--tag-brown-fg); }
+
+.prob { scroll-margin-block: calc(var(--topbar-h) + 90px) 24px; }
+.pname { transition: color 0.15s; }
+.prob input[type="checkbox"] { transition: transform 0.1s; }
+.prob input[type="checkbox"]:active { transform: scale(0.88); }
+.prob.is-current { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
+.prob.flash { animation: row-flash 1.4s ease-out; }
+@keyframes row-flash { 0%, 35% { background: var(--accent-soft); } 100% { background: transparent; } }
+
+/* ---------- topic page: on-this-page outline (wide screens only) ---------- */
+.topic-shell { display: block; }
+.outline { display: none; }
+@container (min-width: 1180px) {
+  .topic-shell { display: grid; grid-template-columns: minmax(0, 900px) 200px; justify-content: center; column-gap: 24px; }
+  .outline {
+    display: block;
+    position: sticky;
+    top: calc(var(--topbar-h) + 72px);
+    align-self: start;
+    margin-top: calc(clamp(28px, 6vw, 72px) + 64px);
+  }
+  .outline p { margin-bottom: 6px; color: var(--faint); font-size: 0.75rem; font-weight: 600; }
+  .outline button { display: block; width: 100%; padding: 4px 10px; background: none; border: 0; border-left: 2px solid var(--line); color: var(--muted); font-size: 0.8125rem; text-align: left; }
+  .outline button:hover { color: var(--ink); }
+  .outline button[aria-current="true"] { border-left-color: var(--accent); color: var(--ink); font-weight: 500; }
+}

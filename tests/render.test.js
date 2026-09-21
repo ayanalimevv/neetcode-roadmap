@@ -73,7 +73,7 @@ test('the all-problems page lists all 150 problems in 18 topic blocks with worki
   for (const id of ['f-q', 'f-topic', 'f-hints', 'f-count', 'f-empty']) assert.ok(html.includes(`id="${id}"`), id);
   assert.equal(count(html, /<option value="/g), 19);                 // 18 topics + "All topics"
   assert.equal(count(html, /data-f="diff"/g), 4);
-  assert.equal(count(html, /data-f="status"/g), 3);
+  assert.equal(count(html, /data-f="status"/g), 4);                // All, To do, Done, Revisit
   assert.ok(html.includes('data-q="two sum'), 'search text is lower-cased');
 });
 
@@ -109,4 +109,72 @@ test('code blocks show highlighted, escaped code and a copy button', () => {
   assert.ok(html.includes('class="copy"'));
   assert.ok(html.includes('&lt;='), 'escaped comparison');
   assert.ok(html.includes('<span class="k">function</span>'));
+});
+
+/* ---------- LeetCode links, revisit star, progress card, outline ---------- */
+
+test('every problem row links to its LeetCode page in a new tab, safely', () => {
+  let links = 0;
+  for (const t of TOPICS) {
+    const html = renderTopic(t, undefined, undefined, GROUPS[t.group]);
+    for (const p of t.problems) {
+      assert.ok(html.includes(`href="${p.lc.url}"`), `${p.name} has no LeetCode link`);
+      assert.ok(html.includes(`LeetCode #${p.lc.n}`), `${p.name} number`);
+    }
+    links += count(html, /class="lc"/g);
+    assert.equal(count(html, /class="lc"[^>]*target="_blank" rel="noopener noreferrer"/g), t.problems.length, t.slug);
+  }
+  assert.equal(links, 150);
+});
+
+test('exactly the seven Premium problems carry a Premium tag', () => {
+  const total = TOPICS.map((t) => count(renderTopic(t), /tag-premium/g)).reduce((a, b) => a + b, 0);
+  assert.equal(total, 7);
+});
+
+test('every row has a revisit star button that starts unpressed', () => {
+  const html = renderAll({ topics: TOPICS, total: TOTAL });
+  assert.equal(count(html, /class="star" aria-pressed="false"/g), 150);
+});
+
+test('the all-problems page pre-selects Revisit for #/all/revisit, and All otherwise', () => {
+  const revisit = renderAll({ topics: TOPICS, total: TOTAL, filter: 'revisit' });
+  assert.ok(/data-f="status" data-v="revisit" aria-pressed="true"/.test(revisit));
+  assert.ok(/data-f="status" data-v="" aria-pressed="false"/.test(revisit));
+  const plain = renderAll({ topics: TOPICS, total: TOTAL });
+  assert.ok(/data-f="status" data-v="" aria-pressed="true"/.test(plain));
+  assert.ok(/data-f="status" data-v="revisit" aria-pressed="false"/.test(plain));
+  assert.ok(renderCrumb({ name: 'all', filter: 'revisit' }, TOPICS).includes('Revisit'));
+});
+
+test('the home page has a progress card: count, stacked difficulty bar, legend and an Up next button', () => {
+  const home = renderHome({ overview: OVERVIEW, topics: TOPICS, groups: GROUPS, lastSlug: '', total: TOTAL });
+  for (const s of ['data-big', 'data-pct', 'id="home-bar"', 'role="progressbar"', 'data-next', 'data-goto-problem']) assert.ok(home.includes(s), s);
+  assert.equal(count(home, /data-seg="/g), 3);
+  assert.equal(count(home, /data-dline="/g), 3);
+  assert.ok(!home.includes('class="revisit-list"'), 'no revisit list when nothing is starred');
+});
+
+test('starred problems appear on the home page, escaped, capped at eight with a link to the rest', () => {
+  const revisit = TOPICS[0].problems.concat(TOPICS[1].problems).slice(0, 10).map((p) => ({ id: p.id, name: p.name, topicTitle: 'Arrays' }));
+  revisit[0].name = '<b>x</b>';
+  const home = renderHome({ overview: OVERVIEW, topics: TOPICS, groups: GROUPS, lastSlug: '', total: TOTAL, revisit });
+  assert.equal(count(home, /data-goto-problem="/g), 8);            // the list is capped at eight rows
+  assert.ok(home.includes('&lt;b&gt;x&lt;/b&gt;') && !home.includes('<b>x</b>'));
+  assert.ok(home.includes('Revisit (10)') && home.includes('href="#/all/revisit"'));
+});
+
+test('a topic page has an outline whose buttons point at real sections', () => {
+  for (const t of TOPICS) {
+    const html = renderTopic(t);
+    const targets = [...html.matchAll(/<aside class="outline"[\s\S]*?<\/aside>/g)][0][0].match(/data-scroll="([^"]+)"/g).map((s) => s.slice(13, -1));
+    assert.deepEqual(targets, ['sec-theory', 'sec-templates', 'sec-watch', 'problems'], t.slug);
+    for (const id of targets) assert.ok(html.includes(`id="${id}"`), `${t.slug} has no #${id}`);
+  }
+});
+
+test('a topic page also shows a per-difficulty line and the group tag', () => {
+  const html = renderTopic(TOPICS[0], undefined, undefined, 'Foundations');
+  assert.ok(html.includes(`data-diffline="${TOPICS[0].id}"`));
+  assert.ok(html.includes('tag tag-group') && html.includes('Foundations'));
 });

@@ -4,7 +4,15 @@
 import { esc, inlineCode, highlight } from './highlight.js';
 
 const DIFF = { E: ['Easy', 'tag-easy'], M: ['Medium', 'tag-medium'], H: ['Hard', 'tag-hard'] };
+const DIFFS = ['E', 'M', 'H'];
 const escAttr = (s) => esc(s).replace(/"/g, '&quot;');
+
+const OUTLINE = [
+  ['sec-theory', 'Before problem 1'],
+  ['sec-templates', 'Templates'],
+  ['sec-watch', 'Watch out'],
+  ['problems', 'Problems'],
+];
 
 /* ---------- sidebar and breadcrumb ---------- */
 
@@ -34,13 +42,13 @@ export function markNav(nav, route) {
 export function renderCrumb(route, topics) {
   const root = '<a href="#/">NeetCode 150</a><span>/</span>';
   if (route.name === 'topic') return `${root}<span class="here">${esc(topics.find((t) => t.slug === route.slug).title)}</span>`;
-  if (route.name === 'all') return `${root}<span class="here">All problems</span>`;
+  if (route.name === 'all') return `${root}<span class="here">${route.filter === 'revisit' ? 'Revisit' : 'All problems'}</span>`;
   return '<span class="here">NeetCode 150</span>';
 }
 
 /* ---------- home ---------- */
 
-export function renderHome({ overview, topics, groups, lastSlug, total }) {
+export function renderHome({ overview, topics, groups, lastSlug, total, revisit = [] }) {
   const bySlug = Object.fromEntries(topics.map((t) => [t.slug, t]));
 
   const loop = overview.loop
@@ -71,14 +79,43 @@ export function renderHome({ overview, topics, groups, lastSlug, total }) {
     .join('');
 
   const resume = bySlug[lastSlug]
-    ? `<a class="btn btn-primary" href="#/${lastSlug}">Continue with ${esc(bySlug[lastSlug].title)} →</a>`
+    ? `<a class="btn" href="#/${lastSlug}">Continue with ${esc(bySlug[lastSlug].title)} →</a>`
+    : '';
+
+  const legend = DIFFS
+    .map((d) => `<li><span class="dot dot-${d.toLowerCase()}"></span>${DIFF[d][0]} <b data-dline="${d}"></b></li>`)
+    .join('');
+
+  const revisitSection = revisit.length
+    ? `<section class="section"><h2>Revisit <span class="muted">${revisit.length}</span></h2>
+        <ul class="revisit-list">${revisit
+          .slice(0, 8)
+          .map((r) => `<li><button type="button" class="link-row" data-goto-problem="${r.id}"><span>${esc(r.name)}</span><span class="muted">${esc(r.topicTitle)}</span></button></li>`)
+          .join('')}</ul>
+        ${revisit.length > 8 ? '<p class="after"><a href="#/all/revisit">See all starred problems →</a></p>' : ''}</section>`
     : '';
 
   return `<div class="page">
     <h1>${esc(overview.title)}</h1>
     <p class="lede">${inlineCode(overview.lede)}</p>
-    <div class="actions">${resume}<a class="btn" href="#/all">Browse all ${total} problems</a></div>
+
+    <section class="progress-card" aria-labelledby="pc-h">
+      <div class="pc-head"><h2 id="pc-h">Your progress</h2><span class="pc-pct" data-pct></span></div>
+      <div class="pc-nums"><span class="pc-big" data-big>0</span><span class="pc-of">/ ${total} solved</span></div>
+      <div class="stack" id="home-bar" role="progressbar" aria-label="Problems solved" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="0">
+        <i class="pseg pseg-e" data-seg="E"></i><i class="pseg pseg-m" data-seg="M"></i><i class="pseg pseg-h" data-seg="H"></i>
+      </div>
+      <ul class="pc-legend">${legend}</ul>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" data-goto-problem data-next>Up next</button>
+        ${resume}
+        <a class="btn" href="#/all">Browse all ${total} problems</a>
+        ${revisit.length ? `<a class="btn" href="#/all/revisit">Revisit (${revisit.length})</a>` : ''}
+      </div>
+    </section>
+
     <section class="section"><h2>How to use this</h2><div class="loop">${loop}</div><p class="calm">${inlineCode(overview.calm)}</p></section>
+    ${revisitSection}
     <section class="section"><h2>Which technique is this?</h2><dl class="pick">${pick}</dl></section>
     <section class="section"><h2>Topics</h2>${tiles}</section>
   </div>`;
@@ -86,27 +123,42 @@ export function renderHome({ overview, topics, groups, lastSlug, total }) {
 
 /* ---------- problems ---------- */
 
+const STAR = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L2.8 7.9l5-.7z"/></svg>';
+
+function lcLink(p) {
+  if (!p.lc) return '';
+  const label = `LeetCode #${p.lc.n}`;
+  const title = p.lc.premium ? `${label} · needs LeetCode Premium` : `${label} · press o`;
+  return `<a class="lc" href="${p.lc.url}" target="_blank" rel="noopener noreferrer" title="${escAttr(title)}" ` +
+    `aria-label="Open ${escAttr(p.name)} on LeetCode, opens in a new tab">${label}<span aria-hidden="true"> ↗</span></a>`;
+}
+
 function problemRow(p, num, q = '') {
   const [label, cls] = DIFF[p.diff];
+  const premium = p.lc?.premium ? '<span class="tag tag-premium" title="Needs LeetCode Premium">Premium</span>' : '';
   const learn = p.learn ? `<span class="tag">learn: ${esc(p.learn)}</span>` : '';
   return `<li class="prob" data-id="${p.id}" data-diff="${p.diff}"${q ? ` data-q="${escAttr(q)}"` : ''}>
     <input type="checkbox" id="c-${p.id}" aria-label="Mark ${escAttr(p.name)} solved">
     <div>
-      <div><span class="pnum">${String(num).padStart(2, '0')}</span><label class="pname" for="c-${p.id}">${esc(p.name)}</label></div>
+      <div class="pline">
+        <span class="pnum">${String(num).padStart(2, '0')}</span><label class="pname" for="c-${p.id}">${esc(p.name)}</label>
+        <span class="pactions">${lcLink(p)}<button type="button" class="star" aria-pressed="false" aria-label="Star ${escAttr(p.name)} to revisit" title="Revisit · press s">${STAR}</button></span>
+      </div>
       <p class="hint">${inlineCode(p.hint)}</p>
       <input class="note" id="n-${p.id}" type="text" maxlength="500" placeholder="One-line takeaway: what was the trick?" aria-label="Note for ${escAttr(p.name)}" hidden>
     </div>
-    <div class="ptags"><span class="tag ${cls}">${label}</span>${learn}</div>
+    <div class="ptags"><span class="tag ${cls}">${label}</span>${premium}${learn}</div>
   </li>`;
 }
 
-export function renderAll({ topics, total }) {
+export function renderAll({ topics, total, filter = '' }) {
   const options = topics.map((t) => `<option value="${t.id}">${esc(t.title)}</option>`).join('');
+  const pressed = (v) => String((filter || '') === v);
   const blocks = topics
     .map((t) => {
       let n = 0;
       const rows = t.problems
-        .map((p) => problemRow(p, ++n, [p.name, p.hint, p.learn ?? '', t.title].join(' ').toLowerCase()))
+        .map((p) => problemRow(p, ++n, [p.name, p.hint, p.learn ?? '', t.title, p.lc ? `leetcode ${p.lc.n}` : ''].join(' ').toLowerCase()))
         .join('');
       return `<section class="grp-block" data-topic="${t.id}">
         <h2 class="grp-h"><a href="#/${t.slug}">${esc(t.title)}</a><span data-count="${t.id}"></span></h2>
@@ -130,9 +182,10 @@ export function renderAll({ topics, total }) {
         <button type="button" data-f="diff" data-v="H" aria-pressed="false">Hard</button>
       </div>
       <div class="seg" role="group" aria-label="Status">
-        <button type="button" data-f="status" data-v="" aria-pressed="true">All</button>
+        <button type="button" data-f="status" data-v="" aria-pressed="${pressed('')}">All</button>
         <button type="button" data-f="status" data-v="todo" aria-pressed="false">To do</button>
         <button type="button" data-f="status" data-v="done" aria-pressed="false">Done</button>
+        <button type="button" data-f="status" data-v="revisit" aria-pressed="${pressed('revisit')}">★ Revisit</button>
       </div>
       <label class="toggle"><input type="checkbox" id="f-hints" checked> Hints</label>
       <span id="f-count" class="f-count" aria-live="polite"></span>
@@ -165,62 +218,122 @@ export function renderTopic(t, prev, next, groupLabel = '') {
     })
     .join('');
 
-  return `<article class="page g-${t.group}">
+  const outline = OUTLINE.map(([id, label]) => `<button type="button" data-scroll="${id}">${label}</button>`).join('');
+
+  return `<div class="topic-shell g-${t.group}"><article class="page">
     <h1>${esc(t.title)}</h1>
     <div class="props">
       <div class="prop"><span class="prop-k">Progress</span><span class="prop-v"><span class="num" data-count="${t.id}"></span><div class="track"><i data-bar="${t.id}"></i></div></span></div>
+      <div class="prop"><span class="prop-k">By difficulty</span><span class="prop-v muted" data-diffline="${t.id}"></span></div>
       <div class="prop"><span class="prop-k">Time to learn</span><span class="prop-v">${esc(t.time)}</span></div>
       <div class="prop"><span class="prop-k">Problems</span><span class="prop-v">${t.problems.length}<button type="button" class="link-btn" data-scroll="problems">Jump to problems ↓</button></span></div>
       ${groupLabel ? `<div class="prop"><span class="prop-k">Group</span><span class="prop-v"><span class="tag tag-group">${esc(groupLabel)}</span></span></div>` : ''}
     </div>
 
-    <section class="section"><h2>Before problem 1</h2>
+    <section class="section" id="sec-theory"><h2>Before problem 1</h2>
       <ul class="theory">${t.theory.map((x) => `<li>${x}</li>`).join('')}</ul>
       ${t.skip ? `<p class="callout">${t.skip}</p>` : ''}
     </section>
-    <section class="section"><h2>Templates</h2>${t.snippets.map(codeBlock).join('')}</section>
-    <section class="section"><h2>Watch out</h2><ul class="watch">${t.watch.map((x) => `<li>${x}</li>`).join('')}</ul></section>
+    <section class="section" id="sec-templates"><h2>Templates</h2>${t.snippets.map(codeBlock).join('')}</section>
+    <section class="section" id="sec-watch"><h2>Watch out</h2><ul class="watch">${t.watch.map((x) => `<li>${x}</li>`).join('')}</ul></section>
     <section class="section" id="problems"><h2>Problems</h2>${lists}${t.after ? `<p class="after">${t.after}</p>` : ''}</section>
 
     <nav class="pager" aria-label="Neighbouring topics">${pagerLink(prev, 'prev', '← Previous')}${pagerLink(next, 'next', 'Next →')}</nav>
-  </article>`;
+  </article>
+  <aside class="outline" aria-label="On this page"><p>On this page</p>${outline}</aside></div>`;
 }
 
 /* ---------- keeping the page in step with the store ---------- */
 
+export function nextUnsolved(topics, store) {
+  for (const t of topics) for (const p of t.problems) if (!store.isDone(p.id)) return p;
+  return null;
+}
+
 function paintRow(row, store) {
   const id = row.dataset.id;
   const done = store.isDone(id);
+  const starred = store.isRevisit(id);
   const box = row.querySelector('input[type="checkbox"]');
   const note = row.querySelector('.note');
+  const star = row.querySelector('.star');
   box.checked = done;
   row.classList.toggle('done', done);
+  row.classList.toggle('revisit', starred);
+  star.setAttribute('aria-pressed', String(starred));
   if (document.activeElement !== note) note.value = store.note(id); // never overwrite a note being typed
-  note.hidden = !(done || note.value);
+  note.hidden = !(done || note.value || document.activeElement === note);
 }
 
 export function paintRows(app, store) {
   for (const row of app.querySelectorAll('.prob')) paintRow(row, store);
 }
 
+const setAll = (selector, fn) => document.querySelectorAll(selector).forEach(fn);
+
 export function paintProgress(topics, store) {
   let done = 0;
   let total = 0;
+  const solved = { E: 0, M: 0, H: 0 };
+  const count = { E: 0, M: 0, H: 0 };
+
   for (const t of topics) {
-    const n = store.doneCount(t.problems.map((p) => p.id));
+    let n = 0;
+    const td = { E: 0, M: 0, H: 0 };
+    const dd = { E: 0, M: 0, H: 0 };
+    for (const p of t.problems) {
+      td[p.diff]++;
+      count[p.diff]++;
+      if (store.isDone(p.id)) { n++; dd[p.diff]++; solved[p.diff]++; }
+    }
     done += n;
     total += t.problems.length;
+
     const text = `${n} / ${t.problems.length}`;
-    for (const el of document.querySelectorAll(`[data-cnt="${t.id}"]`)) el.textContent = text;
-    for (const el of document.querySelectorAll(`[data-count="${t.id}"]`)) el.textContent = `${text} solved`;
-    for (const el of document.querySelectorAll(`[data-bar="${t.id}"]`)) el.style.width = `${(100 * n) / t.problems.length}%`;
+    const pct = (100 * n) / t.problems.length;
+    setAll(`[data-cnt="${t.id}"]`, (el) => (el.textContent = text));
+    setAll(`[data-count="${t.id}"]`, (el) => (el.textContent = `${text} solved`));
+    setAll(`[data-bar="${t.id}"]`, (el) => (el.style.width = `${pct}%`));
+    setAll(`[data-diffline="${t.id}"]`, (el) => (el.textContent = DIFFS.filter((d) => td[d]).map((d) => `${DIFF[d][0]} ${dd[d]}/${td[d]}`).join(' · ')));
+    // the fill behind this topic's row in the sidebar
+    setAll(`.sb-link[data-route="${t.slug}"]`, (el) => { el.style.setProperty('--p', pct); el.title = `${n} of ${t.problems.length} solved`; });
   }
+
   const all = `${done} / ${total}`;
-  for (const el of document.querySelectorAll('[data-cnt="all"]')) el.textContent = all;
-  for (const el of document.querySelectorAll('[data-count="all"]')) el.textContent = `${all} solved`;
-  for (const el of document.querySelectorAll('[data-bar="all"]')) el.style.width = `${(100 * done) / total}%`;
+  const pctAll = (100 * done) / total;
+  setAll('[data-cnt="all"]', (el) => (el.textContent = all));
+  setAll('[data-count="all"]', (el) => (el.textContent = `${all} solved`));
+  setAll('[data-bar="all"]', (el) => (el.style.width = `${pctAll}%`));
+  setAll('.sb-link[data-route="all"]', (el) => { el.style.setProperty('--p', pctAll); el.title = `${done} of ${total} solved`; });
+
+  // top bar: the mini bar on wide screens, the thin line on phones
   document.getElementById('overall-text').textContent = all;
-  document.getElementById('overall-bar').style.width = `${(100 * done) / total}%`;
+  document.getElementById('overall-bar').style.width = `${pctAll}%`;
+  const line = document.getElementById('topline');
+  if (line) {
+    line.setAttribute('aria-valuenow', String(done));
+    line.querySelector('i').style.width = `${pctAll}%`;
+  }
+
+  // home progress card
+  setAll('[data-big]', (el) => (el.textContent = done));
+  setAll('[data-pct]', (el) => (el.textContent = `${Math.round(pctAll)}%`));
+  setAll('[data-seg]', (el) => (el.style.width = `${(100 * solved[el.dataset.seg]) / total}%`));
+  setAll('[data-dline]', (el) => (el.textContent = `${solved[el.dataset.dline]}/${count[el.dataset.dline]}`));
+  setAll('#home-bar', (el) => el.setAttribute('aria-valuenow', String(done)));
+
+  const next = nextUnsolved(topics, store);
+  setAll('[data-next]', (el) => {
+    if (next) {
+      el.textContent = `Up next: ${next.name} →`;
+      el.dataset.gotoProblem = next.id;
+      el.disabled = false;
+    } else {
+      el.textContent = `All ${total} problems solved`;
+      el.dataset.gotoProblem = '';
+      el.disabled = true;
+    }
+  });
 }
 
 /* ---------- events (delegated, so they survive re-rendering the page) ---------- */
@@ -245,7 +358,7 @@ async function copyText(text) {
   }
 }
 
-export function bindInteractions(app, store) {
+export function bindInteractions(app, store, { goToProblem = () => {} } = {}) {
   app.addEventListener('change', (e) => {
     const box = e.target.closest('.prob input[type="checkbox"]');
     if (!box) return;
@@ -260,10 +373,22 @@ export function bindInteractions(app, store) {
   });
 
   app.addEventListener('click', async (e) => {
+    const star = e.target.closest('.star');
+    if (star) {
+      const row = star.closest('.prob');
+      store.setRevisit(row.dataset.id, !store.isRevisit(row.dataset.id));
+      paintRow(row, store);
+      return;
+    }
     const jump = e.target.closest('[data-scroll]');
     if (jump) {
       // Not an <a href="#…">: a hash change would be read by the router as a new page.
       document.getElementById(jump.dataset.scroll)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const go = e.target.closest('[data-goto-problem]');
+    if (go) {
+      if (go.dataset.gotoProblem) goToProblem(go.dataset.gotoProblem);
       return;
     }
     const btn = e.target.closest('.copy');

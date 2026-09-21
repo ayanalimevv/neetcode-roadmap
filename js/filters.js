@@ -1,5 +1,11 @@
 // Search and filters on the All problems page. Rows are hidden, not re-rendered, so ticks and notes stay put.
 
+function statusOk(status, row) {
+  if (!status) return true;
+  if (status === 'revisit') return row.classList.contains('revisit');
+  return (status === 'done') === row.classList.contains('done');
+}
+
 export function applyFilters(blocks, { text = '', topic = '', diff = '', status = '' }) {
   const needle = text.trim().toLowerCase();
   let shown = 0;
@@ -9,7 +15,7 @@ export function applyFilters(blocks, { text = '', topic = '', diff = '', status 
       const ok =
         (!topic || block.dataset.topic === topic) &&
         (!diff || row.dataset.diff === diff) &&
-        (!status || (status === 'done') === row.classList.contains('done')) &&
+        statusOk(status, row) &&
         (!needle || row.dataset.q.includes(needle));
       row.hidden = !ok;
       if (ok) any++;
@@ -28,7 +34,9 @@ export function bindFilters(root) {
   const empty = root.querySelector('#f-empty');
   const blocks = [...root.querySelectorAll('.grp-block')];
   const rows = root.querySelectorAll('.prob');
-  const state = { diff: '', status: '' };
+  const pressed = (f) => root.querySelector(`.seg button[data-f="${f}"][aria-pressed="true"]`)?.dataset.v ?? '';
+  // Start from whatever the page was rendered with (the #/all/revisit route pre-selects "Revisit").
+  const state = { diff: pressed('diff'), status: pressed('status') };
 
   function apply() {
     const shown = applyFilters(blocks, { text: q.value, topic: topic.value, diff: state.diff, status: state.status });

@@ -41,6 +41,11 @@
   --bad: #e03e3e;
   --ok: #0f7b6c;
 
+  /* difficulty colours for bars and dots */
+  --c-easy: #0f7b6c;
+  --c-med: #dfab01;
+  --c-hard: #e03e3e;
+
   --font-body: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
@@ -89,6 +94,9 @@
 
     --bad: #ff7369;
     --ok: #4dab9a;
+    --c-easy: #4dab9a;
+    --c-med: #e3a73a;
+    --c-hard: #ff7369;
     --shadow-pop: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 3px 6px rgba(0, 0, 0, 0.4), 0 9px 24px rgba(0, 0, 0, 0.5);
   }
 }
