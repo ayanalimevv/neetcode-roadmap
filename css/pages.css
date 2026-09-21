@@ -209,3 +209,6 @@
   .outline button:hover { color: var(--ink); }
   .outline button[aria-current="true"] { border-left-color: var(--accent); color: var(--ink); font-weight: 500; }
 }
+
+/* On a narrow screen the LeetCode link and star wrap onto their own line; keep them visible so the row has no blank gap. */
+@media (max-width: 620px) { .pactions { opacity: 1; } }

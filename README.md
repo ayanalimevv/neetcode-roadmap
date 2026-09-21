@@ -1,10 +1,17 @@
 # NeetCode 150 roadmap
 
-A study site for all 18 NeetCode topics and 150 problems, in JavaScript. Each topic has the minimum theory to start, tested code templates, a "watch out" list, and the problems in NeetCode's order with a one-line hint each. Tick a problem, jot the trick in a note, and your progress syncs across devices.
+A study site for all 18 NeetCode topics and 150 problems, in JavaScript. Each topic has the minimum theory to start, tested code templates, a "watch out" list, and the problems in NeetCode's order with a one-line hint and a LeetCode link each. Tick a problem, star it to revisit, jot the trick in a note, and your progress syncs across devices.
 
 Live: https://ayanalimevv.github.io/neetcode-roadmap/
 
 No framework, no build step, no dependencies. It is plain HTML, CSS and ES modules.
+
+## Using it
+
+- **Command palette:** `Ctrl+K` (`⌘K` on a Mac), or `/`. Type to jump to any topic or problem; `Enter` opens it, `Ctrl/⌘+Enter` opens the problem on LeetCode.
+- **Shortcuts:** press `?` for the list. Highlights: `j`/`k` move between problems, `x` ticks, `s` stars for revisit, `n` writes a note, `o` opens LeetCode, `g` then `h`/`a`/`r`/`n` go to Overview / All problems / Revisit / next unsolved, `[` and `]` change topic, `Ctrl+\` toggles the sidebar.
+- **Progress:** a fill behind each topic in the sidebar, an overview card with a difficulty-split bar and an "Up next" button, and a thin line under the top bar on phones.
+- **Premium:** seven problems are LeetCode Premium (Encode and Decode Strings, Walls and Gates, Number of Connected Components, Graph Valid Tree, Alien Dictionary, both Meeting Rooms). They are tagged; the link works if you have a subscription.
 
 ## Run it locally
 
@@ -47,6 +54,10 @@ Things to know:
 - A secret gist is unlisted, not private: anyone with its URL can read it. It holds only problem ids, ticks and notes.
 - A `gist`-scope token can read and write all of your gists. Revoke it any time at https://github.com/settings/tokens.
 - Nothing about your gist or token is in this repository.
+
+## LeetCode links
+
+`data/leetcode.js` is generated. `node scripts/leetcode-links.mjs` (needs network) takes NeetCode's slugs, checks each one against LeetCode's public GraphQL API, and rewrites the file. It stops without writing if a slug is missing or a difficulty disagrees. Run it if a topic file gains, loses or renames a problem.
 
 ## Editing content
 
