@@ -204,7 +204,7 @@ startRouter(TOPICS.map((t) => t.slug), (r) => {
   if (pendingProblem) {
     const id = pendingProblem;
     pendingProblem = null;
-    requestAnimationFrame(() => focusRow(id));
+    focusRow(id); // the page is already drawn; no need to wait for a frame (which a background tab never runs)
   }
 });
 

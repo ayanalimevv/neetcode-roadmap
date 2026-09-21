@@ -52,6 +52,7 @@ export function createCurrent(app) {
       const r = row();
       if (!r) return false;
       r.querySelector('input[type="checkbox"]').click();
+      r.scrollIntoView({ block: 'nearest' }); // ticking reveals the note field, which makes the row taller
       return true;
     },
 
