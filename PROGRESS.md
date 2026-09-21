@@ -19,6 +19,14 @@ All steps of the original plan are built and pushed. 18 topics, 150 problems, 14
 - [x] Tests: data, snippets, merge, store, sync (fake GitHub API), router, highlight, render
 - [x] README, repo created, pushed, Pages enabled
 
+## Redesign (2026-09-21)
+Notion-style layout after the user found the first version cramped and the colours poor:
+- One centred reading column (900px; the All-problems page is 1040px). Topic page order: properties, Before problem 1, Templates, Watch out, **Problems last**, with a "Jump to problems" button (a `data-scroll` button, not a `#problems` link, because a hash change would be read by the router as a new page).
+- Collapsible sidebar: folds away on desktop (remembered in `neetcode-roadmap:sidebar`, `Ctrl+\`), slide-over drawer under 900px.
+- New route `#/all`: all 150 problems with search, topic, difficulty and status filters (`js/filters.js` hides rows rather than re-rendering, so ticks and notes stay put).
+- Palette and fonts follow Notion: white / warm grey, Inter, tinted tags, one blue accent, light and dark. Group colours are tag colours only.
+- Bugs found by looking at the live site: the skip link changed the hash and sent the router home; the mobile sidebar rules were above the base `.sidebar` rule so `position: sticky` won and the drawer took 560px of flow. **Keep media queries after the rules they override.**
+
 ## Verified on the live site (2026-09-21)
 - Home and topic pages render on desktop (sidebar + two columns) and at 400px (one column, no sideways scroll, nav toggle works).
 - Tick, note, counts, progress bars and localStorage persistence work; the sync dialog opens in its "Not connected" state.

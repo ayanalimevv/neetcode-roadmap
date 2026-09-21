@@ -113,6 +113,7 @@
   background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
+@media (max-width: 720px) { .filters { position: static; } }   /* it wraps to ~170px on a phone: too much to pin */
 .filters input[type="search"], .filters select {
   padding: 5px 9px;
   background: var(--bg);
