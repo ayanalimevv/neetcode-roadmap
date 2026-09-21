@@ -19,7 +19,7 @@
   background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
-.site-header-in { display: flex; align-items: center; gap: 12px 16px; min-height: var(--header-h); }
+.site-header-in { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-height: var(--header-h); padding-block: 8px; }
 .brand {
   font: 700 1.1rem / 1 var(--font-display);
   letter-spacing: -0.01em;
@@ -31,6 +31,7 @@
 .overall-text { font: 500 0.82rem var(--font-mono); font-variant-numeric: tabular-nums; }
 .overall .track { width: 96px; }
 @media (max-width: 560px) { .overall .track { display: none; } }
+@media (max-width: 480px) { .brand span { display: none; } }
 
 .nav-toggle {
   padding: 6px 12px;
@@ -92,7 +93,7 @@ body.nav-open .topic-nav { display: block; }
 .tn-home:hover, .tn-link:hover { background: var(--surface-2); color: var(--ink); }
 .tn-link[aria-current="page"], .tn-home[aria-current="page"] { background: var(--surface-2); color: var(--ink); font-weight: 600; }
 .tn-link[aria-current="page"] { box-shadow: inset 3px 0 0 var(--t); }
-.tn-cnt { font: 400 0.72rem var(--font-mono); font-variant-numeric: tabular-nums; color: var(--t, var(--muted)); }
+.tn-cnt { font: 400 0.72rem var(--font-mono); font-variant-numeric: tabular-nums; color: var(--t, var(--muted)); white-space: nowrap; }
 .tn-group { margin: 14px 8px 4px; }
 
 @media (min-width: 1000px) {
