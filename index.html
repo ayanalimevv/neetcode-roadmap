@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>NeetCode 150 Roadmap</title>
   <meta name="description" content="A JavaScript study roadmap for all 18 NeetCode 150 topics: minimum theory, templates, hinted problems, and notes that sync across your devices.">
-  <meta name="theme-color" content="#EDF0F4" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0D1118" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23121722'/%3E%3Cpath d='M10 23V9l12 14V9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2337352f'/%3E%3Cpath d='M10 23V9l12 14V9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500..800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 
   <link rel="stylesheet" href="./css/tokens.css">
   <link rel="stylesheet" href="./css/base.css">
@@ -20,40 +20,43 @@
   <script type="module" src="./js/main.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#app">Skip to content</a>
+  <a class="skip-link" href="#/">Skip to content</a>
 
-  <header class="site-header">
-    <div class="wrap site-header-in">
-      <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="topic-nav">Topics</button>
-      <a class="brand" href="#/">NeetCode 150 <span>roadmap</span></a>
+  <div class="shell">
+    <!-- filled by js/render.js -->
+    <aside id="topic-nav" class="sidebar" aria-label="Topics"></aside>
+    <div id="scrim" class="scrim"></div>
 
-      <div class="overall" aria-live="polite">
-        <span id="overall-text" class="overall-text">0 / 150</span>
-        <div class="track"><i id="overall-bar"></i></div>
-      </div>
+    <div class="content">
+      <header class="topbar">
+        <button id="nav-toggle" class="icon-btn" type="button" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="topic-nav" title="Toggle sidebar (Ctrl+\)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="M8 4v12"/></svg>
+        </button>
+        <nav id="crumb" class="crumb" aria-label="Breadcrumb"></nav>
 
-      <button id="sync-chip" class="chip" type="button" aria-haspopup="dialog">
-        <span class="chip-dot" aria-hidden="true"></span>
-        <span id="sync-label">Local only</span>
-      </button>
+        <div class="overall" aria-live="polite">
+          <span id="overall-text" class="overall-text">0 / 150</span>
+          <div class="track"><i id="overall-bar"></i></div>
+        </div>
+
+        <button id="sync-chip" class="chip" type="button" aria-haspopup="dialog">
+          <span class="chip-dot" aria-hidden="true"></span>
+          <span id="sync-label">Local only</span>
+        </button>
+      </header>
+
+      <!-- filled by js/main.js: the home page, all problems, or one topic -->
+      <main id="app" class="app" tabindex="-1">
+        <p class="page">Loading roadmap…</p>
+        <noscript><p class="page">This roadmap needs JavaScript to run.</p></noscript>
+      </main>
+
+      <footer class="site-footer">
+        Ticks and notes are saved in this browser. Connect sync to keep them across your devices.
+        <a href="https://github.com/ayanalimevv/neetcode-roadmap" rel="noopener">Source on GitHub</a>
+      </footer>
     </div>
-  </header>
-
-  <div class="wrap layout">
-    <!-- filled by js/render.js: the 18 topics with n / N -->
-    <nav id="topic-nav" class="topic-nav" aria-label="Topics"></nav>
-
-    <!-- filled by js/router.js: home page or one topic page -->
-    <main id="app" class="app" tabindex="-1">
-      <p class="boot">Loading roadmap…</p>
-      <noscript><p class="boot">This roadmap needs JavaScript to run.</p></noscript>
-    </main>
   </div>
-
-  <footer class="wrap site-footer">
-    Ticks and notes are saved in this browser. Connect sync to keep them across your devices.
-    <a href="https://github.com/ayanalimevv/neetcode-roadmap" rel="noopener">Source on GitHub</a>
-  </footer>
 
   <!-- behaviour wired in js/sync-ui.js -->
   <dialog id="sync-dialog" class="sync-dialog" aria-labelledby="sync-title">

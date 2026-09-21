@@ -14,6 +14,11 @@ test('a known slug opens that topic, with or without a trailing slash', () => {
   assert.deepEqual(parseHash('#/1d-dp/', slugs), { name: 'topic', slug: '1d-dp' });
 });
 
+test('"#/all" is the all-problems page', () => {
+  assert.deepEqual(parseHash('#/all', slugs), { name: 'all' });
+  assert.deepEqual(parseHash('#/all/', slugs), { name: 'all' });
+});
+
 test('unknown or odd hashes fall back to home', () => {
   assert.deepEqual(parseHash('#/nope', slugs), { name: 'home' });
   assert.deepEqual(parseHash('#graphs', slugs), { name: 'home' });
