@@ -240,7 +240,7 @@ export function initAi({ topics, problemById, topicById, storage, getRoute, getC
     } catch (e) {
       const stopped = e?.name === 'AbortError';
       if (text.trim()) {
-        messages.push({ role: 'assistant', content: text + (stopped ? '\n\n*(stopped)*' : '') });
+        messages.push({ role: 'assistant', content: text + (stopped ? '\n\n(stopped)' : '') });
       } else {
         messages.pop(); // nothing came back: forget the question so history stays in turns
         holder.remove();

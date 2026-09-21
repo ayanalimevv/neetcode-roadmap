@@ -13,6 +13,17 @@ No framework, no build step, no dependencies. It is plain HTML, CSS and ES modul
 - **Progress:** a fill behind each topic in the sidebar, an overview card with a difficulty-split bar and an "Up next" button, and a thin line under the top bar on phones.
 - **Premium:** seven problems are LeetCode Premium (Encode and Decode Strings, Walls and Gates, Number of Connected Components, Graph Valid Tree, Alien Dictionary, both Meeting Rooms). They are tagged; the link works if you have a subscription.
 
+## The study assistant
+
+Press `a` (or the **Ask** button) to open a panel beside the page. It answers with **your own free API key**, so nothing runs on a server of mine:
+
+- **Hint:** a ladder (Nudge, Pattern, Outline). The full solution only appears when you choose it.
+- **Debug:** paste your JavaScript plus what you expected and what happened. It points at the buggy line, explains why, and only shows the fix when you press *Show the fix*.
+- **Review:** complexity, missed edge cases, a cleaner version, an alternative approach, and a related problem to try.
+- **Explain / Chat:** questions about a hint, a template or a concept, and a one-click topic summary.
+
+Set it up once in the panel's settings: pick an engine, paste a key, press *Load models*. **Gemini** (free key from Google AI Studio) is the default; **Groq** (fast, but a small free token allowance) and **OpenRouter** (free models, which change often) are alternatives. The key stays in that browser only. It is never synced, never in this repo, and a test checks it never reaches the gist. Chat history is kept per topic in the same browser. Your question and code go to the engine you choose, so don't paste secrets.
+
 ## Run it locally
 
 ES modules need http, so open it through a server rather than double-clicking `index.html`:

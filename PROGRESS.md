@@ -11,7 +11,7 @@ Resume here in a fresh session. Original plan: `C:\Users\Tharu\.claude\plans\giv
 - Local preview: `python -m http.server 8765` (ES modules need http).
 
 ## State
-All steps of the original plan are built and pushed, plus the redesign and round 3. 18 topics, 150 problems, 193 tests.
+All steps of the original plan are built and pushed, plus the redesign and round 3. 18 topics, 150 problems, 266 tests.
 
 - [x] Housekeeping, shell, CSS (tokens, base, components, pages)
 - [x] JS: store, merge, sync, sync-ui, render, router, main, highlight
@@ -33,7 +33,15 @@ Notion-style layout after the user found the first version cramped and the colou
 - Progress: fill behind each sidebar row (`--p`, set in `paintProgress`; hover and current-page use background-*color* so the fill stays), home card with a difficulty-split bar and Up next, thin top-bar line on phones.
 - Interaction: command palette (`js/palette.js`, `js/search.js`), shortcuts (`js/keys.js` + `SHORTCUTS` table, which also builds the `?` sheet in `js/help.js`), current-row tracking (`js/current.js`), outline scroll-spy (`js/outline.js`).
 - Gotchas found: a CSS class name (`.seg`) used for two things; `requestAnimationFrame` never fires in a background tab, so nothing should wait on it; real key presses through the Chrome tool only reach a *visible* tab, so drive shortcuts with synthetic `KeyboardEvent`s there.
-- **Next round (planned, not built): a free AI bot.** Design is in the plan file: one chat interface with a bring-your-own free key (Gemini / Groq / OpenRouter, all allow browser calls) plus an optional on-device WebLLM model; keys never synced.
+- **Study assistant: built in round 4, see below.**
+
+## Round 4 (2026-09-21): the study assistant
+- `js/ai/`: `panel.js` (UI), `engines.js` (registry, settings, default-model picker, `ask`), `gemini.js` and `openai-compat.js` (streaming adapters; Groq and OpenRouter share the latter), `sse.js`, `errors.js`, `prompts.js` (system prompt, hint ladder, numbered code, size caps), `markdown.js` (escape-first subset), `history.js` (per-topic, capped).
+- **No on-device model** (the user's decision). Engines are Gemini (default), Groq, OpenRouter. Model ids are never hard-coded: each provider's list-models endpoint feeds a dropdown and `pickDefaultModel` chooses (newest plain `gemini-N-flash`, else `openai/gpt-oss-120b` on Groq).
+- The key lives only in `neetcode-roadmap:ai` in localStorage. `tests/ai-engines.test.js` proves it never appears in anything sync sends to GitHub.
+- Modes: Hint (Nudge, Pattern, Outline, Full solution; never advances to Full solution on its own), Debug (bug first, fix only on "Show the fix"), Review, Explain (+ topic summary), Chat. The model is told it cannot run code.
+- Not built: running the user's code in a Worker to feed real output to the model (a possible later round).
+- Real answers are untested: only fake-streamed ones (unit tests and a fake `fetch` in the live page). A real free key is needed to see actual model output.
 
 ## Verified on the live site (2026-09-21)
 - Home and topic pages render on desktop (sidebar + two columns) and at 400px (one column, no sideways scroll, nav toggle works).
