@@ -79,7 +79,7 @@
 .pnum { display: inline-block; min-width: 1.9em; font: 0.75rem var(--font-mono); color: var(--faint); }
 .pname { font-weight: 500; cursor: pointer; }
 .hint { margin-top: 1px; padding-left: 1.9em; color: var(--muted); font-size: 0.875rem; }
-.ptags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 6px; max-width: 230px; padding-top: 1px; }
+.ptags { display: flex; flex-wrap: wrap; align-items: flex-start; align-content: flex-start; justify-content: flex-end; gap: 4px 6px; max-width: 230px; padding-top: 1px; }
 .prob.done .pname { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line-strong); }
 .note {
   width: 100%;
