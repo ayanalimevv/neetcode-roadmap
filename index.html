@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NeetCode 150 Roadmap</title>
+  <meta name="description" content="A JavaScript study roadmap for all 18 NeetCode 150 topics: minimum theory, templates, hinted problems, and notes that sync across your devices.">
+  <meta name="theme-color" content="#EDF0F4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0D1118" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23121722'/%3E%3Cpath d='M10 23V9l12 14V9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500..800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#app">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap site-header-in">
+      <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="topic-nav">Topics</button>
+      <a class="brand" href="#/">NeetCode 150 <span>roadmap</span></a>
+
+      <div class="overall" aria-live="polite">
+        <span id="overall-text" class="overall-text">0 / 150</span>
+        <div class="track"><i id="overall-bar"></i></div>
+      </div>
+
+      <button id="sync-chip" class="chip" type="button" aria-haspopup="dialog">
+        <span class="chip-dot" aria-hidden="true"></span>
+        <span id="sync-label">Local only</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="wrap layout">
+    <!-- filled by js/render.js: the 18 topics with n / N -->
+    <nav id="topic-nav" class="topic-nav" aria-label="Topics"></nav>
+
+    <!-- filled by js/router.js: home page or one topic page -->
+    <main id="app" class="app" tabindex="-1">
+      <p class="boot">Loading roadmap…</p>
+      <noscript><p class="boot">This roadmap needs JavaScript to run.</p></noscript>
+    </main>
+  </div>
+
+  <footer class="wrap site-footer">
+    Ticks and notes are saved in this browser. Connect sync to keep them across your devices.
+    <a href="https://github.com/ayanalimevv/neetcode-roadmap" rel="noopener">Source on GitHub</a>
+  </footer>
+
+  <!-- behaviour wired in js/sync-ui.js -->
+  <dialog id="sync-dialog" class="sync-dialog" aria-labelledby="sync-title">
+    <form id="sync-form" class="sync-form" autocomplete="off">
+      <h2 id="sync-title">Sync across devices</h2>
+      <p>Your ticks and notes are saved to a <strong>secret Gist</strong> in your own GitHub account. Do this once on each device.</p>
+
+      <ol class="sync-steps">
+        <li><a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=NeetCode%20roadmap%20sync" target="_blank" rel="noopener">Create a classic token</a> with only the <code>gist</code> scope, and choose an expiry you’re happy with.</li>
+        <li>Paste it below. It is stored in this browser only.</li>
+      </ol>
+
+      <label class="sync-field" for="sync-token">GitHub token</label>
+      <input id="sync-token" name="token" type="password" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="ghp_…">
+
+      <p id="sync-status" class="sync-status" role="status" aria-live="polite"></p>
+
+      <div class="sync-actions">
+        <button id="sync-connect" type="submit" class="btn btn-primary">Connect</button>
+        <button id="sync-now" type="button" class="btn" hidden>Sync now</button>
+        <button id="sync-disconnect" type="button" class="btn" hidden>Disconnect</button>
+        <button id="sync-close" type="button" class="btn btn-quiet">Close</button>
+      </div>
+
+      <details class="sync-caveats">
+        <summary>What this can and can’t protect</summary>
+        <ul>
+          <li>A “secret” gist is unlisted, not private. Anyone who has its URL can read it. It holds only problem ids, ticks and your notes.</li>
+          <li>A <code>gist</code>-scope token can read and write all of your gists. Revoke it any time at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>.</li>
+          <li>Disconnect removes the token from this browser only. Your gist and your other devices are left as they are.</li>
+        </ul>
+      </details>
+    </form>
+  </dialog>
+</body>
+</html>
