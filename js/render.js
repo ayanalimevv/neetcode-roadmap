@@ -7,6 +7,21 @@ const DIFF = { E: ['Easy', 'tag-easy'], M: ['Medium', 'tag-medium'], H: ['Hard',
 const DIFFS = ['E', 'M', 'H'];
 const escAttr = (s) => esc(s).replace(/"/g, '&quot;');
 
+// One small icon per topic, Notion-style. Keyed by topic id (data/topics/*.js), not slug.
+const ICONS = {
+  arr: '🔢', tp: '↔️', stk: '🥞', bs: '🔍', sw: '🪟', ll: '🔗',
+  tree: '🌳', trie: '🔠', heap: '⛰️', bt: '🧩', gr: '🕸️', agr: '🗺️',
+  dp1: '📈', dp2: '🧮', gd: '💰', int: '📆', math: '📐', bit: '⚙️',
+};
+const HOME_ICON = '🏠';
+const ALL_ICON = '📋';
+const topicIcon = (id) => ICONS[id] ?? '📄';
+
+// A short plain-text teaser for a topic's hover-reveal card, from its first theory bullet.
+const stripTags = (html) => String(html).replace(/<[^>]*>/g, '');
+const truncate = (s, n) => (s.length > n ? `${s.slice(0, n).trimEnd()}…` : s);
+const teaser = (t) => truncate(stripTags(t.theory?.[0] ?? '').replace(/\s+/g, ' ').trim(), 96);
+
 const OUTLINE = [
   ['sec-theory', 'Before problem 1'],
   ['sec-templates', 'Templates'],
@@ -16,16 +31,20 @@ const OUTLINE = [
 
 /* ---------- sidebar and breadcrumb ---------- */
 
+function iconSpan(icon) {
+  return `<span class="ico" aria-hidden="true">${icon}</span>`;
+}
+
 export function renderNav(topics, groups) {
   let html =
     '<a class="sb-brand" href="#/"><span class="sb-logo">N</span>NeetCode 150</a>' +
-    '<a class="sb-link" href="#/" data-route="home"><span>Overview</span></a>' +
-    '<a class="sb-link" href="#/all" data-route="all"><span>All problems</span><span class="sb-cnt" data-cnt="all"></span></a>';
+    `<a class="sb-link" href="#/" data-route="home"><span class="sb-left">${iconSpan(HOME_ICON)}<span class="sb-text">Overview</span></span></a>` +
+    `<a class="sb-link" href="#/all" data-route="all"><span class="sb-left">${iconSpan(ALL_ICON)}<span class="sb-text">All problems</span></span><span class="sb-cnt" data-cnt="all"></span></a>`;
   for (const [key, label] of Object.entries(groups)) {
     html += `<div class="sb-label">${esc(label)}</div>`;
     for (const t of topics.filter((x) => x.group === key)) {
       html += `<a class="sb-link" href="#/${t.slug}" data-route="${t.slug}">` +
-        `<span>${esc(t.title)}</span><span class="sb-cnt" data-cnt="${t.id}"></span></a>`;
+        `<span class="sb-left">${iconSpan(topicIcon(t.id))}<span class="sb-text">${esc(t.title)}</span></span><span class="sb-cnt" data-cnt="${t.id}"></span></a>`;
     }
   }
   return html;
@@ -69,8 +88,10 @@ export function renderHome({ overview, topics, groups, lastSlug, total, revisit 
         .filter((t) => t.group === key)
         .map(
           (t) =>
-            `<a class="tile" href="#/${t.slug}"><b>${esc(t.title)}</b>` +
+            `<a class="tile" href="#/${t.slug}">` +
+            `<span class="tile-top">${iconSpan(topicIcon(t.id))}<b>${esc(t.title)}</b></span>` +
             `<span data-count="${t.id}"></span><span>${esc(t.time)}</span>` +
+            `<p class="tile-desc">${esc(teaser(t))}</p>` +
             `<div class="track"><i data-bar="${t.id}"></i></div></a>`,
         )
         .join('');
@@ -96,7 +117,7 @@ export function renderHome({ overview, topics, groups, lastSlug, total, revisit 
     : '';
 
   return `<div class="page">
-    <h1>${esc(overview.title)}</h1>
+    <h1><span class="page-icon" aria-hidden="true">${HOME_ICON}</span>${esc(overview.title)}</h1>
     <p class="lede">${inlineCode(overview.lede)}</p>
 
     <section class="progress-card" aria-labelledby="pc-h">
@@ -222,7 +243,7 @@ export function renderTopic(t, prev, next, groupLabel = '') {
   const outline = OUTLINE.map(([id, label]) => `<button type="button" data-scroll="${id}">${label}</button>`).join('');
 
   return `<div class="topic-shell g-${t.group}"><article class="page">
-    <h1>${esc(t.title)}</h1>
+    <h1><span class="page-icon" aria-hidden="true">${topicIcon(t.id)}</span>${esc(t.title)}</h1>
     <div class="props">
       <div class="prop"><span class="prop-k">Progress</span><span class="prop-v"><span class="num" data-count="${t.id}"></span><div class="track"><i data-bar="${t.id}"></i></div></span></div>
       <div class="prop"><span class="prop-k">By difficulty</span><span class="prop-v muted" data-diffline="${t.id}"></span></div>

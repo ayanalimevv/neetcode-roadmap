@@ -4,6 +4,8 @@
 .page-wide { max-width: 1040px; }
 .page > * + * { margin-top: 0; }
 
+.page-icon { display: inline-block; margin-right: 0.35em; font-size: 0.88em; vertical-align: -0.06em; }
+
 .lede { max-width: 62ch; margin-top: 12px; color: var(--muted); font-size: 1.0625rem; }
 .section { margin-top: 44px; }
 .section > h2 + * { margin-top: 12px; }
@@ -40,11 +42,46 @@
 
 .tile-label { margin-top: 20px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 8px; }
-.tile { display: grid; gap: 2px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; text-decoration: none; }
-.tile:hover { background: var(--bg-hover); }
+.tile {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.tile:hover, .tile:focus-visible {
+  background: var(--bg-hover);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
+}
 .tile b { font-weight: 600; }
 .tile span { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
 .tile .track { margin-top: 8px; }
+
+/* icon + title row; needs (0,2,0) specificity to beat the ".tile span" rule above */
+.tile .tile-top { display: flex; align-items: center; gap: 7px; color: var(--ink); }
+.tile .tile-top .ico { flex: 0 0 auto; font-size: 1.05rem; line-height: 1; transition: transform 0.15s ease; }
+.tile:hover .tile-top .ico { transform: scale(1.12) rotate(-4deg); }
+
+/* a one-line teaser that reveals on hover, like Notion's page-preview hover card */
+.tile-desc {
+  margin: 0;
+  max-height: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.22s ease, opacity 0.18s ease, margin-top 0.22s ease;
+}
+.tile:hover .tile-desc, .tile:focus-visible .tile-desc {
+  max-height: 3.6em;
+  margin-top: 2px;
+  opacity: 1;
+}
 
 /* ---------- theory ---------- */
 .theory, .watch { padding-left: 1.4em; display: grid; gap: 10px; list-style: disc; }

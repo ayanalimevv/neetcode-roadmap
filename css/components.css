@@ -41,6 +41,7 @@
   border-radius: var(--radius);
   color: var(--muted);
   text-decoration: none;
+  transition: background-color 0.12s ease, color 0.12s ease;
 }
 /* Each row carries a progress fill: --p (0-100) is set by paintProgress. Only background-COLOR changes on
    hover and for the current page, so the fill (a background-image) stays visible underneath. */
@@ -54,6 +55,19 @@
 .sb-cnt { font-size: 0.75rem; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--faint); }
 .sb-link[aria-current="page"] .sb-cnt { color: var(--muted); }
 .sb-label { margin: 16px 8px 4px; font-size: 0.75rem; font-weight: 600; color: var(--faint); }
+
+/* A row's left group: icon + label, so justify-content: space-between still puts the count on the right. */
+.sb-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sb-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-link .ico {
+  flex: 0 0 auto;
+  width: 18px;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-align: center;
+  transition: transform 0.12s ease;
+}
+.sb-link:hover .ico { transform: scale(1.12); }
 
 /* These come AFTER the base .sidebar rule on purpose: same specificity, so the later one wins. */
 
